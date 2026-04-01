@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="pt-AO">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>GINGA Futsal - O Super App do Futsal Angolano</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+      
+      :root {
+        --bg-dark: #0f172a;
+        --accent-gold: #f59e0b;
+        --accent-blue: #3b82f6;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-dark);
+        color: #f8fafc;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      .glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .nav-active {
+        color: var(--accent-blue);
+        transform: scale(1.1);
+      }
+
+      .tab-content {
+        display: none;
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .btn-active:active {
+        transform: scale(0.95);
+      }
+
+      /* Custom animations for the "LIVE" badge */
+      @keyframes pulse-red {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+      }
+      .animate-pulse-red {
+        animation: pulse-red 1.5s infinite;
+      }
+    </style>
+  </head>
+  <body class="pb-24">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-[#0f172a]/80 backdrop-blur-lg border-b border-white/5 px-6 py-4 flex justify-between items-center">
+      <div onclick="toggleAdmin()" class="flex items-center gap-2 cursor-pointer active:scale-95 transition-transform">
+        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+          <i data-lucide="trophy" class="w-5 h-5 text-white"></i>
+        </div>
+        <h1 class="text-xl font-black tracking-tighter italic">
+          GINGA<span class="text-amber-500">FUTSAL</span>
+        </h1>
+      </div>
+      <button onclick="openCheckout('Perfil Verificado', 5000)" class="bg-amber-500 hover:bg-amber-600 text-[#0f172a] px-3 py-1.5 rounded-full text-xs font-bold transition-transform active:scale-95 flex items-center gap-1">
+        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+        SER PRO
+      </button>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="px-4 py-6 max-w-md mx-auto">
+      <!-- INÍCIO TAB -->
+      <section id="home" class="tab-content active space-y-6">
+        <h2 class="text-2xl font-bold px-2">Destaques da Banda</h2>
+        
+        <div id="feed-container" class="space-y-6">
+          <!-- Feed items will be injected here -->
+        </div>
+      </section>
+
+      <!-- SCOUT TAB -->
+      <section id="scout" class="tab-content space-y-6">
+        <div class="flex justify-between items-end px-2">
+          <div>
+            <h2 class="text-2xl font-bold">Scout Digital</h2>
+            <p class="text-xs text-slate-400">Encontra os talentos de Luanda</p>
+          </div>
+          <button onclick="toggleMunicipalityFilter()" class="p-2 bg-white/5 rounded-lg border border-white/10">
+            <i data-lucide="filter" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Municipality Filter -->
+        <div id="municipality-filter" class="hidden glass p-4 rounded-2xl space-y-3">
+          <p class="text-[10px] font-bold uppercase text-slate-500">Municípios de Luanda</p>
+          <div class="grid grid-cols-2 gap-2" id="municipality-checklist">
+            <!-- Municipalities injected here -->
+          </div>
+        </div>
+
+        <div class="grid gap-4" id="player-list">
+          <!-- Players will be injected here -->
+        </div>
+      </section>
+
+      <!-- EQUIPAS TAB -->
+      <section id="equipas" class="tab-content space-y-6">
+        <div class="px-2 space-y-1">
+          <h2 class="text-2xl font-bold">Equipas</h2>
+          <p class="text-xs text-slate-400">Gere e acompanha as equipas do país</p>
+        </div>
+
+        <!-- Submenu Competitions -->
+        <div class="flex gap-4 overflow-x-auto no-scrollbar px-2 border-b border-white/5">
+          <button onclick="filterTeamCategory('PROVINCIAL')" class="team-cat-btn pb-2 text-xs font-bold whitespace-nowrap border-b-2 border-blue-500 text-blue-500">Provincial</button>
+          <button onclick="filterTeamCategory('NACIONAL')" class="team-cat-btn pb-2 text-xs font-bold whitespace-nowrap border-b-2 border-transparent text-slate-500">Nacional</button>
+          <button onclick="filterTeamCategory('TACA')" class="team-cat-btn pb-2 text-xs font-bold whitespace-nowrap border-b-2 border-transparent text-slate-500">Taça de Angola</button>
+          <button onclick="filterTeamCategory('SELECAO')" class="team-cat-btn pb-2 text-xs font-bold whitespace-nowrap border-b-2 border-transparent text-slate-500">Seleção Nacional</button>
+          <button onclick="filterTeamCategory('CLASSIFICACAO')" class="team-cat-btn pb-2 text-xs font-bold whitespace-nowrap border-b-2 border-transparent text-slate-500">Classificação</button>
+        </div>
+
+        <!-- Add Team Card -->
+        <button onclick="handleAddTeam()" class="w-full glass p-4 rounded-2xl flex items-center gap-4 border-dashed border-2 border-white/10 hover:border-blue-500/50 transition-all">
+          <div class="w-12 h-12 bg-blue-500/20 text-blue-500 rounded-xl flex items-center justify-center">
+            <i data-lucide="plus" class="w-6 h-6"></i>
+          </div>
+          <div class="text-left">
+            <p class="font-bold text-sm">Adicionar Equipa</p>
+            <p class="text-[10px] text-slate-500">Regista a tua equipa no sistema GINGA</p>
+          </div>
+        </button>
+
+        <div class="space-y-4">
+          <div class="flex gap-2">
+            <div class="flex-1 relative">
+              <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+              <input type="text" id="team-search" oninput="renderTeams()" placeholder="Pesquisar equipa..." class="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+            <button class="p-3 bg-blue-500 rounded-xl text-white"><i data-lucide="sliders-horizontal" class="w-5 h-5"></i></button>
+          </div>
+          
+          <div class="flex gap-2 overflow-x-auto no-scrollbar">
+            <div class="flex gap-2" id="season-filters">
+              <button onclick="setSeason('2025')" class="season-btn px-4 py-2 rounded-xl text-[10px] font-bold border border-blue-500 bg-blue-500/20 text-blue-400">2025</button>
+              <button onclick="setSeason('2026')" class="season-btn px-4 py-2 rounded-xl text-[10px] font-bold border border-white/10 bg-white/5 text-slate-500">2026</button>
+            </div>
+            <div class="w-px h-8 bg-white/10 mx-1"></div>
+            <div class="flex gap-2" id="gender-filters">
+              <button onclick="setGender('MASC')" class="gender-btn px-4 py-2 rounded-xl text-[10px] font-bold border border-blue-500 bg-blue-500/20 text-blue-400">Sénior Masc.</button>
+              <button onclick="setGender('FEM')" class="gender-btn px-4 py-2 rounded-xl text-[10px] font-bold border border-white/10 bg-white/5 text-slate-500">Sénior Fem.</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-4" id="team-list">
+          <!-- Teams injected here -->
+        </div>
+      </section>
+
+      <!-- PLACAR TAB -->
+      <section id="placar" class="tab-content space-y-6">
+        <div class="px-2">
+          <h2 class="text-2xl font-bold">Placar GINGA</h2>
+          <p class="text-xs text-slate-400">Resultados em tempo real</p>
+        </div>
+        
+        <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar px-2">
+          <button onclick="filterMatches('PROVINCIAL')" class="match-filter-btn px-4 py-2 rounded-full text-[10px] font-bold whitespace-nowrap bg-blue-500 border border-blue-500">PROVINCIAL</button>
+          <button onclick="filterMatches('NACIONAL')" class="match-filter-btn px-4 py-2 rounded-full text-[10px] font-bold whitespace-nowrap bg-white/5 border border-white/10 text-slate-400">NACIONAL</button>
+          <button onclick="filterMatches('SELEÇÃO')" class="match-filter-btn px-4 py-2 rounded-full text-[10px] font-bold whitespace-nowrap bg-white/5 border border-white/10 text-slate-400">SELEÇÃO</button>
+        </div>
+
+        <div class="space-y-4" id="match-list">
+          <!-- Matches will be injected here -->
+        </div>
+      </section>
+
+      <!-- RESERVAS TAB -->
+      <section id="reservas" class="tab-content space-y-6">
+        <h2 class="text-2xl font-bold px-2">Alugar Campo</h2>
+        <div class="grid gap-6" id="field-list">
+          <!-- Fields will be injected here -->
+        </div>
+      </section>
+
+      <!-- PERFIL TAB -->
+      <section id="perfil" class="tab-content space-y-8">
+        <div class="text-center pt-4">
+          <div class="relative inline-block">
+            <div class="w-24 h-24 rounded-3xl border-4 border-amber-500 p-1 mx-auto">
+              <img src="https://picsum.photos/seed/me/200/200" class="w-full h-full rounded-2xl object-cover" alt="Profile">
+            </div>
+            <div class="absolute -bottom-2 -right-2 bg-amber-500 text-[#0f172a] p-1.5 rounded-xl shadow-lg">
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+            </div>
+          </div>
+          <h2 class="mt-4 text-2xl font-black tracking-tight">Afonso Militão</h2>
+          <p class="text-slate-400 text-sm">@afonso_ginga • Cazenga</p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+          <div class="glass p-4 text-center rounded-2xl">
+            <p class="text-xl font-black text-blue-400">12</p>
+            <p class="text-[8px] text-slate-500 uppercase font-bold">Jogos</p>
+          </div>
+          <div class="glass p-4 text-center rounded-2xl">
+            <p class="text-xl font-black text-amber-500">45</p>
+            <p class="text-[8px] text-slate-500 uppercase font-bold">Golos</p>
+          </div>
+          <div class="glass p-4 text-center rounded-2xl">
+            <p class="text-xl font-black text-green-400">8</p>
+            <p class="text-[8px] text-slate-500 uppercase font-bold">MVPs</p>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <h3 class="font-bold text-sm uppercase tracking-widest text-slate-500 px-1">Menu do Atleta</h3>
+          <div class="grid gap-2">
+            <button class="w-full glass p-4 rounded-2xl flex items-center justify-between group">
+              <div class="flex items-center gap-3">
+                <div class="p-2 bg-blue-500/20 text-blue-400 rounded-lg"><i data-lucide="trophy" class="w-5 h-5"></i></div>
+                <span class="font-bold text-sm">Minhas Conquistas</span>
+              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-slate-600"></i>
+            </button>
+            <button onclick="openCheckout('Destaque no Topo', 2500)" class="w-full bg-gradient-to-r from-amber-500/20 to-amber-500/5 border border-amber-500/30 p-4 rounded-2xl flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="p-2 bg-amber-500 text-[#0f172a] rounded-lg"><i data-lucide="star" class="w-5 h-5 fill-current"></i></div>
+                <div class="text-left">
+                  <span class="font-bold text-sm block">Destaque no Topo</span>
+                  <span class="text-[10px] text-amber-500/70">Aumenta a tua visibilidade em 10x</span>
+                </div>
+              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-amber-500"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 inset-x-0 bg-[#0f172a]/90 backdrop-blur-xl border-t border-white/5 px-2 py-4 flex justify-around items-center z-50">
+      <button onclick="switchTab('home')" class="nav-btn flex flex-col items-center gap-1 text-blue-400" id="nav-home">
+        <i data-lucide="home" class="w-5 h-5"></i>
+        <span class="text-[8px] font-bold uppercase tracking-tighter">Início</span>
+      </button>
+      <button onclick="switchTab('scout')" class="nav-btn flex flex-col items-center gap-1 text-slate-500" id="nav-scout">
+        <i data-lucide="search" class="w-5 h-5"></i>
+        <span class="text-[8px] font-bold uppercase tracking-tighter">Scout</span>
+      </button>
+      <button onclick="switchTab('equipas')" class="nav-btn flex flex-col items-center gap-1 text-slate-500" id="nav-equipas">
+        <i data-lucide="users" class="w-5 h-5"></i>
+        <span class="text-[8px] font-bold uppercase tracking-tighter">Equipas</span>
+      </button>
+      <div class="relative -top-4">
+        <button onclick="switchTab('placar')" class="w-12 h-12 bg-blue-600 text-white rounded-2xl shadow-2xl flex items-center justify-center transition-all duration-300" id="nav-placar">
+          <i data-lucide="trophy" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <button onclick="switchTab('reservas')" class="nav-btn flex flex-col items-center gap-1 text-slate-500" id="nav-reservas">
+        <i data-lucide="calendar" class="w-5 h-5"></i>
+        <span class="text-[8px] font-bold uppercase tracking-tighter">Reservas</span>
+      </button>
+      <button onclick="switchTab('perfil')" class="nav-btn flex flex-col items-center gap-1 text-slate-500" id="nav-perfil">
+        <i data-lucide="user" class="w-5 h-5"></i>
+        <span class="text-[8px] font-bold uppercase tracking-tighter">Perfil</span>
+      </button>
+    </nav>
+
+    <!-- Share Modal -->
+    <div id="share-modal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeShare()"></div>
+      <div class="relative w-full max-w-xs bg-[#1e293b] rounded-[32px] p-6 shadow-2xl border border-white/10">
+        <h3 class="text-lg font-bold text-center mb-6">Partilhar GINGA</h3>
+        <div class="grid grid-cols-3 gap-4">
+          <button onclick="shareTo('whatsapp')" class="flex flex-col items-center gap-2">
+            <div class="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white">
+              <i data-lucide="message-circle" class="w-6 h-6"></i>
+            </div>
+            <span class="text-[10px] font-bold">WhatsApp</span>
+          </button>
+          <button onclick="shareTo('facebook')" class="flex flex-col items-center gap-2">
+            <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white">
+              <i data-lucide="facebook" class="w-6 h-6"></i>
+            </div>
+            <span class="text-[10px] font-bold">Facebook</span>
+          </button>
+          <button onclick="shareTo('instagram')" class="flex flex-col items-center gap-2">
+            <div class="w-12 h-12 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 rounded-2xl flex items-center justify-center text-white">
+              <i data-lucide="instagram" class="w-6 h-6"></i>
+            </div>
+            <span class="text-[10px] font-bold">Instagram</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Team Modal -->
+    <div id="add-team-modal" class="fixed inset-0 z-[110] hidden flex items-end sm:items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeAddTeamModal()"></div>
+      <div class="relative w-full max-w-md bg-[#1e293b] rounded-t-[32px] sm:rounded-[32px] p-8 shadow-2xl border border-white/10 animate-slide-up">
+        <button onclick="closeAddTeamModal()" class="absolute top-6 right-6 text-slate-500 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+        
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 bg-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="plus-circle" class="w-8 h-8"></i>
+          </div>
+          <h3 class="text-xl font-bold">Registar Nova Equipa</h3>
+          <p class="text-slate-400 text-sm">Preenche os dados oficiais da tua equipa</p>
+        </div>
+
+        <form onsubmit="event.preventDefault(); saveNewTeam();" class="space-y-4">
+          <div>
+            <label class="text-[10px] font-bold text-slate-500 uppercase ml-1 mb-1 block">Nome da Equipa</label>
+            <input type="text" id="new-team-name" required placeholder="Ex: Sambizanga Futsal" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-500 uppercase ml-1 mb-1 block">Município</label>
+            <select id="new-team-city" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+              <option value="Luanda">Luanda</option>
+              <option value="Viana">Viana</option>
+              <option value="Cazenga">Cazenga</option>
+              <option value="Belas">Belas</option>
+              <option value="Talatona">Talatona</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 uppercase ml-1 mb-1 block">Género</label>
+              <select id="new-team-gender" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                <option value="MASC">Masculino</option>
+                <option value="FEM">Feminino</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 uppercase ml-1 mb-1 block">Época</label>
+              <select id="new-team-season" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-500/20 transition-all active:scale-95 mt-4">
+            CONFIRMAR REGISTO
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="fixed inset-0 z-[100] hidden flex items-end sm:items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeCheckout()"></div>
+      <div class="relative w-full max-w-md bg-[#1e293b] rounded-t-[32px] sm:rounded-[32px] p-8 shadow-2xl border border-white/10 animate-slide-up">
+        <button onclick="closeCheckout()" class="absolute top-6 right-6 text-slate-500 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+        
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 bg-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="credit-card" class="w-8 h-8"></i>
+          </div>
+          <h3 class="text-xl font-bold">Checkout Rápido</h3>
+          <p class="text-slate-400 text-sm">Pagamento via Multicaixa Express</p>
+        </div>
+
+        <div class="bg-white/5 rounded-2xl p-4 mb-6 space-y-3">
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-400">Item:</span>
+            <span class="font-bold" id="checkout-item-name">-</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-400">Subtotal:</span>
+            <span class="font-bold" id="checkout-item-price">0 Kz</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-400">Taxa Serviço (10%):</span>
+            <span class="font-bold" id="checkout-item-tax">0 Kz</span>
+          </div>
+          <div class="pt-3 border-t border-white/5 flex justify-between items-center">
+            <span class="text-lg font-bold">Total:</span>
+            <span class="text-2xl font-black text-amber-500" id="checkout-item-total">0 Kz</span>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="text-[10px] font-bold text-slate-500 uppercase ml-1 mb-1 block">Teu IBAN / Coordenadas</label>
+            <input type="text" placeholder="AO06 0000 0000..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+          </div>
+          <button onclick="confirmPayment()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-500/20 transition-all active:scale-95">
+            CONFIRMAR PAGAMENTO
+          </button>
+          <p class="text-[10px] text-center text-slate-500">Ao confirmar, aceitas os termos de serviço da GINGA Futsal.</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // --- Data ---
+      let isAdmin = false; // Simulated admin status
+      function toggleAdmin() {
+        isAdmin = !isAdmin;
+        alert('Modo Admin: ' + (isAdmin ? 'ATIVADO' : 'DESATIVADO'));
+      }
+      const municipalities = ['Belas', 'Cacuaco', 'Cazenga', 'Icolo e Bengo', 'Luanda', 'Quiçama', 'Kilamba Kiaxi', 'Talatona', 'Viana'];
+      let selectedMunicipalities = [...municipalities];
+
+      const players = [
+        { id: '1', name: 'António Manuel', nickname: 'Tony Ginga', municipality: 'Cazenga', position: 'Ala Direito', goals: 24, assists: 12, rating: 4.8, verified: true, image: 'https://picsum.photos/seed/player1/200/200' },
+        { id: '2', name: 'José Carlos', nickname: 'Zé do Palanca', municipality: 'Luanda', position: 'Fixo', goals: 5, assists: 18, rating: 4.5, verified: false, image: 'https://picsum.photos/seed/player2/200/200' },
+        { id: '3', name: 'Mateus Dala', nickname: 'Dala Mágico', municipality: 'Viana', position: 'Pivot', goals: 32, assists: 8, rating: 4.9, verified: true, image: 'https://picsum.photos/seed/player3/200/200' },
+        { id: '4', name: 'Bruno Silva', nickname: 'Bruninho', municipality: 'Talatona', position: 'Ala Esquerdo', goals: 15, assists: 20, rating: 4.7, verified: true, image: 'https://picsum.photos/seed/player4/200/200' }
+      ];
+
+      const matches = [
+        { id: '1', teamA: 'Cazenga FC', teamB: 'Palanca United', scoreA: 3, scoreB: 2, status: 'LIVE', time: "34'", category: 'PROVINCIAL' },
+        { id: '2', teamA: 'Viana Stars', teamB: 'Samba Futsal', scoreA: 0, scoreB: 0, status: 'UPCOMING', time: '19:00', category: 'PROVINCIAL' },
+        { id: '3', teamA: '1º de Agosto', teamB: 'Interclube', scoreA: 5, scoreB: 4, status: 'FINISHED', category: 'NACIONAL' },
+        { id: '4', teamA: 'Angola 🇦🇴', teamB: 'Egipto 🇪🇬', scoreA: 2, scoreB: 1, status: 'LIVE', time: "12'", category: 'SELEÇÃO' }
+      ];
+
+      const fields = [
+        { id: '1', name: 'Pavilhão da Cidadela', location: 'Luanda Centro', price: 15000, image: 'https://picsum.photos/seed/field1/400/200' },
+        { id: '2', name: 'Dream Space', location: 'Viana', price: 25000, image: 'https://picsum.photos/seed/field2/400/200' },
+        { id: '3', name: 'Campo Multiuso Cazenga', location: 'Cazenga', price: 8000, image: 'https://picsum.photos/seed/field3/400/200' }
+      ];
+
+      const teams = [
+        { id: '1', name: 'Saurimo FC', city: 'Lunda Sul', category: 'NACIONAL', gender: 'MASC', season: '2025', logo: 'S' },
+        { id: '2', name: 'Seleção Nacional', city: 'Angola', category: 'SELECAO', gender: 'MASC', season: '2025', logo: '🇦🇴' },
+        { id: '3', name: 'Coprat FC', city: 'Luanda', category: 'NACIONAL', gender: 'MASC', season: '2025', logo: 'C' },
+        { id: '4', name: 'Cazenga Futsal', city: 'Luanda', category: 'PROVINCIAL', gender: 'MASC', season: '2025', logo: 'C' },
+        { id: '5', name: 'Palanca Girls', city: 'Luanda', category: 'PROVINCIAL', gender: 'FEM', season: '2025', logo: 'P' },
+        { id: '6', name: 'Interclube', city: 'Luanda', category: 'TACA', gender: 'MASC', season: '2026', logo: 'I' }
+      ];
+
+      const ads = [
+        { id: '1', company: 'CUCA', title: 'Refresca a tua Ginga!', color: 'amber' },
+        { id: '2', company: 'UNITEL', title: 'O Próximo Passo é Teu.', color: 'blue' }
+      ];
+
+      let currentTeamCategory = 'PROVINCIAL';
+      let currentSeason = '2025';
+      let currentGender = 'MASC';
+
+      // --- Logic ---
+      function init() {
+        lucide.createIcons();
+        renderFeed();
+        renderMunicipalities();
+        renderPlayers();
+        renderMatches('PROVINCIAL');
+        renderFields();
+        renderTeams();
+      }
+
+      function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+          btn.classList.remove('text-blue-400');
+          btn.classList.add('text-slate-500');
+        });
+        
+        const centerBtn = document.getElementById('nav-placar');
+        if (tabId === 'placar') {
+          centerBtn.classList.add('bg-amber-500', 'text-[#0f172a]', 'rotate-12', 'scale-110');
+          centerBtn.classList.remove('bg-blue-600', 'text-white');
+        } else {
+          centerBtn.classList.remove('bg-amber-500', 'text-[#0f172a]', 'rotate-12', 'scale-110');
+          centerBtn.classList.add('bg-blue-600', 'text-white');
+          const activeNav = document.getElementById('nav-' + tabId);
+          if (activeNav) {
+            activeNav.classList.add('text-blue-400');
+            activeNav.classList.remove('text-slate-500');
+          }
+        }
+        window.scrollTo(0, 0);
+      }
+
+      function renderFeed() {
+        const container = document.getElementById('feed-container');
+        container.innerHTML = `
+          <div class="glass relative aspect-[9/16] rounded-2xl overflow-hidden group">
+            <img src="https://picsum.photos/seed/ginga1/1080/1920" class="w-full h-full object-cover opacity-80" alt="Highlight">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full border-2 border-amber-500 p-0.5">
+                  <img src="https://picsum.photos/seed/user1/100/100" class="rounded-full" alt="User">
+                </div>
+                <div>
+                  <p class="font-bold text-sm">@kandengue_pro_1</p>
+                  <p class="text-[10px] text-slate-400">Cazenga, Luanda</p>
+                </div>
+              </div>
+              <p class="text-sm mb-4 line-clamp-2">Golaço no torneio do bairro! A ginga não mente. 🇦🇴⚽ #FutsalAngola #Ginga</p>
+              <div class="flex gap-4">
+                <button class="flex items-center gap-1 text-xs font-medium text-slate-300">
+                  <i data-lucide="star" class="w-4 h-4"></i> 1.2k
+                </button>
+                <button onclick="openShare()" class="flex items-center gap-1 text-xs font-medium text-slate-300">
+                  <i data-lucide="share-2" class="w-4 h-4"></i> Partilhar
+                </button>
+              </div>
+            </div>
+          </div>
+          ${ads.map(ad => `
+            <div class="bg-${ad.color}-500/10 border border-${ad.color}-500/20 rounded-xl p-4 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-${ad.color}-500 rounded-lg flex items-center justify-center font-black text-[#0f172a]">${ad.company}</div>
+                <div>
+                  <p class="text-[10px] font-bold text-${ad.color}-500 uppercase tracking-widest">Publicidade</p>
+                  <p class="text-sm font-medium">${ad.title}</p>
+                </div>
+              </div>
+              <button class="bg-${ad.color}-500 text-[#0f172a] px-3 py-1 rounded-lg text-[10px] font-bold">SABER MAIS</button>
+            </div>
+          `).join('')}
+        `;
+        lucide.createIcons();
+      }
+
+      function renderMunicipalities() {
+        const list = document.getElementById('municipality-checklist');
+        list.innerHTML = municipalities.map(m => `
+          <label class="flex items-center gap-2 p-2 glass rounded-lg cursor-pointer">
+            <input type="checkbox" checked onchange="toggleMunicipality('${m}')" class="w-4 h-4 accent-blue-500">
+            <span class="text-[10px] font-bold">${m}</span>
+          </label>
+        `).join('');
+      }
+
+      function toggleMunicipality(m) {
+        if (selectedMunicipalities.includes(m)) {
+          selectedMunicipalities = selectedMunicipalities.filter(item => item !== m);
+        } else {
+          selectedMunicipalities.push(m);
+        }
+        renderPlayers();
+      }
+
+      function toggleMunicipalityFilter() {
+        const filter = document.getElementById('municipality-filter');
+        filter.classList.toggle('hidden');
+      }
+
+      function renderPlayers() {
+        const list = document.getElementById('player-list');
+        const filtered = players.filter(p => selectedMunicipalities.includes(p.municipality));
+        list.innerHTML = filtered.map(p => `
+          <div class="glass p-4 flex gap-4 items-center rounded-2xl">
+            <div class="relative">
+              <img src="${p.image}" class="w-16 h-16 rounded-xl object-cover" alt="${p.name}">
+              ${p.verified ? `<div class="absolute -top-1 -right-1 bg-blue-500 rounded-full p-0.5 border-2 border-[#0f172a]"><i data-lucide="check-circle" class="w-2.5 h-2.5 text-white"></i></div>` : ''}
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-bold text-sm flex items-center gap-1">
+                    ${p.nickname}
+                    ${p.verified ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/30">PRO</span>` : ''}
+                  </h3>
+                  <p class="text-[10px] text-slate-400 uppercase tracking-wider">${p.position} • ${p.municipality}</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-amber-500 font-black text-lg leading-none">${p.rating}</p>
+                  <p class="text-[8px] text-slate-500 uppercase">Rating</p>
+                </div>
+              </div>
+              <div class="mt-3 flex gap-4 border-t border-white/5 pt-2">
+                <div><p class="text-xs font-bold">${p.goals}</p><p class="text-[8px] text-slate-500 uppercase">Golos</p></div>
+                <div><p class="text-xs font-bold">${p.assists}</p><p class="text-[8px] text-slate-500 uppercase">Assists</p></div>
+                <button class="ml-auto text-blue-400 text-[10px] font-bold flex items-center gap-1">VER PERFIL <i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+        lucide.createIcons();
+      }
+
+      function filterMatches(category) {
+        document.querySelectorAll('.match-filter-btn').forEach(btn => {
+          btn.classList.remove('bg-blue-500', 'border-blue-500');
+          btn.classList.add('bg-white/5', 'border-white/10', 'text-slate-400');
+          if (btn.innerText === category) {
+            btn.classList.add('bg-blue-500', 'border-blue-500');
+            btn.classList.remove('bg-white/5', 'border-white/10', 'text-slate-400');
+          }
+        });
+        renderMatches(category);
+      }
+
+      function renderMatches(category) {
+        const list = document.getElementById('match-list');
+        const filtered = matches.filter(m => m.category === category);
+        list.innerHTML = filtered.map(m => `
+          <div class="glass p-5 rounded-2xl">
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded ${m.status === 'LIVE' ? 'bg-red-500 text-white animate-pulse-red' : 'bg-white/10 text-slate-400'}">
+                ${m.status} ${m.time ? `• ${m.time}` : ''}
+              </span>
+              <span class="text-[10px] text-slate-500">${m.category}</span>
+            </div>
+            <div class="flex items-center justify-between gap-4">
+              <div class="flex-1 text-center">
+                <div class="w-12 h-12 bg-white/5 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-lg">${m.teamA[0]}</div>
+                <p class="text-xs font-bold truncate">${m.teamA}</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-3xl font-black">${m.scoreA}</span>
+                <span class="text-slate-600 font-bold">-</span>
+                <span class="text-3xl font-black">${m.scoreB}</span>
+              </div>
+              <div class="flex-1 text-center">
+                <div class="w-12 h-12 bg-white/5 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-lg">${m.teamB[0]}</div>
+                <p class="text-xs font-bold truncate">${m.teamB}</p>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function filterTeamCategory(cat) {
+        currentTeamCategory = cat;
+        document.querySelectorAll('.team-cat-btn').forEach(btn => {
+          btn.classList.remove('border-blue-500', 'text-blue-500');
+          btn.classList.add('border-transparent', 'text-slate-500');
+          if (btn.innerText.toUpperCase().includes(cat.substring(0,3))) {
+            btn.classList.add('border-blue-500', 'text-blue-500');
+            btn.classList.remove('border-transparent', 'text-slate-500');
+          }
+        });
+        renderTeams();
+      }
+
+      function setSeason(year) {
+        currentSeason = year;
+        document.querySelectorAll('.season-btn').forEach(btn => {
+          btn.classList.remove('border-blue-500', 'bg-blue-500/20', 'text-blue-400');
+          btn.classList.add('border-white/10', 'bg-white/5', 'text-slate-500');
+          if (btn.innerText === year) {
+            btn.classList.add('border-blue-500', 'bg-blue-500/20', 'text-blue-400');
+            btn.classList.remove('border-white/10', 'bg-white/5', 'text-slate-500');
+          }
+        });
+        renderTeams();
+      }
+
+      function setGender(g) {
+        currentGender = g;
+        document.querySelectorAll('.gender-btn').forEach(btn => {
+          btn.classList.remove('border-blue-500', 'bg-blue-500/20', 'text-blue-400');
+          btn.classList.add('border-white/10', 'bg-white/5', 'text-slate-500');
+          if (btn.innerText.toUpperCase().includes(g)) {
+            btn.classList.add('border-blue-500', 'bg-blue-500/20', 'text-blue-400');
+            btn.classList.remove('border-white/10', 'bg-white/5', 'text-slate-500');
+          }
+        });
+        renderTeams();
+      }
+
+      function handleAddTeam() {
+        if (isAdmin) {
+          openAddTeamModal();
+        } else {
+          openCheckout('Registo de Equipa', 15000);
+        }
+      }
+
+      function openAddTeamModal() {
+        document.getElementById('add-team-modal').classList.remove('hidden');
+        document.getElementById('add-team-modal').classList.add('flex');
+      }
+
+      function closeAddTeamModal() {
+        document.getElementById('add-team-modal').classList.add('hidden');
+        document.getElementById('add-team-modal').classList.remove('flex');
+      }
+
+      function saveNewTeam() {
+        const name = document.getElementById('new-team-name').value;
+        const city = document.getElementById('new-team-city').value;
+        const gender = document.getElementById('new-team-gender').value;
+        const season = document.getElementById('new-team-season').value;
+
+        const newTeam = {
+          id: Date.now().toString(),
+          name: name,
+          city: city,
+          category: currentTeamCategory === 'CLASSIFICACAO' ? 'PROVINCIAL' : currentTeamCategory,
+          gender: gender,
+          season: season,
+          logo: name[0].toUpperCase()
+        };
+
+        teams.push(newTeam);
+        alert('Equipa registada com sucesso! 🇦🇴⚽');
+        closeAddTeamModal();
+        renderTeams();
+      }
+
+      function renderTeams() {
+        const list = document.getElementById('team-list');
+        const search = document.getElementById('team-search').value.toLowerCase();
+        
+        const filtered = teams.filter(t => {
+          const matchesCat = t.category === currentTeamCategory;
+          const matchesSeason = t.season === currentSeason;
+          const matchesGender = t.gender === currentGender;
+          const matchesSearch = (t.name || t.team).toLowerCase().includes(search);
+          
+          return matchesCat && matchesSeason && matchesGender && matchesSearch;
+        });
+
+        if (currentTeamCategory === 'CLASSIFICACAO') {
+          list.innerHTML = `
+            <div class="glass p-6 rounded-2xl text-center space-y-4">
+              <div class="w-16 h-16 bg-amber-500/20 text-amber-500 rounded-full flex items-center justify-center mx-auto">
+                <i data-lucide="list-ordered" class="w-8 h-8"></i>
+              </div>
+              <p class="text-sm font-bold">Tabela de Classificação em atualização...</p>
+              <p class="text-[10px] text-slate-500">Consulta os resultados oficiais da APF Luanda brevemente.</p>
+            </div>
+          `;
+        } else if (filtered.length === 0) {
+          list.innerHTML = `
+            <div class="glass p-8 rounded-2xl text-center">
+              <p class="text-slate-500 text-xs">Nenhuma equipa encontrada para estes filtros.</p>
+            </div>
+          `;
+        } else {
+          list.innerHTML = filtered.map(t => `
+            <div class="glass p-4 flex items-center justify-between rounded-2xl border-l-4 border-blue-500">
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center font-black text-2xl shadow-inner">${t.logo || t.name[0]}</div>
+                <div>
+                  <h3 class="font-bold text-sm">${t.name || t.team}</h3>
+                  <div class="flex gap-2 mt-1">
+                    <span class="text-[8px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20 font-bold uppercase">${t.gender === 'MASC' ? 'Masculino' : 'Feminino'}</span>
+                    <span class="text-[8px] bg-white/5 text-slate-500 px-1.5 py-0.5 rounded border border-white/10 font-bold uppercase">${t.city}</span>
+                  </div>
+                </div>
+              </div>
+              <button class="w-10 h-10 glass rounded-xl flex items-center justify-center text-slate-500 hover:text-blue-400 transition-colors">
+                <i data-lucide="chevron-right" class="w-5 h-5"></i>
+              </button>
+            </div>
+          `).join('');
+        }
+        lucide.createIcons();
+      }
+
+      function renderFields() {
+        const list = document.getElementById('field-list');
+        list.innerHTML = fields.map(f => `
+          <div class="group">
+            <div class="relative h-48 rounded-2xl overflow-hidden mb-3">
+              <img src="${f.image}" class="w-full h-full object-cover" alt="${f.name}">
+              <div class="absolute top-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-lg">
+                <p class="text-xs font-bold text-white">${f.price.toLocaleString()} Kz <span class="text-[8px] opacity-60">/h</span></p>
+              </div>
+            </div>
+            <div class="flex justify-between items-start px-1">
+              <div>
+                <h3 class="font-bold text-lg">${f.name}</h3>
+                <p class="text-xs text-slate-400 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> ${f.location}</p>
+              </div>
+              <button onclick="openCheckout('${f.name}', ${f.price})" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95">RESERVAR</button>
+            </div>
+          </div>
+        `).join('');
+        lucide.createIcons();
+      }
+
+      function openCheckout(name, price) {
+        document.getElementById('checkout-item-name').innerText = name;
+        document.getElementById('checkout-item-price').innerText = price.toLocaleString() + ' Kz';
+        document.getElementById('checkout-item-tax').innerText = (price * 0.1).toLocaleString() + ' Kz';
+        document.getElementById('checkout-item-total').innerText = (price * 1.1).toLocaleString() + ' Kz';
+        document.getElementById('checkout-modal').classList.remove('hidden');
+        document.getElementById('checkout-modal').classList.add('flex');
+      }
+
+      function closeCheckout() {
+        document.getElementById('checkout-modal').classList.add('hidden');
+        document.getElementById('checkout-modal').classList.remove('flex');
+      }
+
+      function confirmPayment() {
+        alert('Pagamento simulado com sucesso! A tua ginga agora está no topo. 🇦🇴⚽');
+        closeCheckout();
+        // If it was a team registration, open the add team modal
+        if (document.getElementById('checkout-item-name').innerText === 'Registo de Equipa') {
+          openAddTeamModal();
+        }
+      }
+
+      function openShare() {
+        document.getElementById('share-modal').classList.remove('hidden');
+        document.getElementById('share-modal').classList.add('flex');
+      }
+
+      function closeShare() {
+        document.getElementById('share-modal').classList.add('hidden');
+        document.getElementById('share-modal').classList.remove('flex');
+      }
+
+      function shareTo(platform) {
+        alert('A partilhar para ' + platform + '...');
+        closeShare();
+      }
+
+      window.onload = init;
+    </script>
+  </body>
+</html>
+
