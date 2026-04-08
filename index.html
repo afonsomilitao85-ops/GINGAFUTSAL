@@ -8,6 +8,50 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Firebase SDK -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, getDocFromServer } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+      import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+      // Firebase configuration
+      const firebaseConfig = {
+        projectId: "gen-lang-client-0874934801",
+        appId: "1:547463834999:web:5db2385ef3da86e485c572",
+        apiKey: "AIzaSyDjkn371gi1uZP6FhfIFGcWQr0cA2lkWY4",
+        authDomain: "gen-lang-client-0874934801.firebaseapp.com",
+        firestoreDatabaseId: "ai-studio-1a8ef551-e738-45d9-b512-b052da9a282b",
+        storageBucket: "gen-lang-client-0874934801.firebasestorage.app",
+        messagingSenderId: "547463834999"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+      const auth = getAuth(app);
+      const provider = new GoogleAuthProvider();
+
+      // Export to window for global access
+      window.db = db;
+      window.auth = auth;
+      window.provider = provider;
+      window.firebaseOps = {
+        setDoc, deleteDoc, doc, collection, onSnapshot, signInWithPopup, signOut
+      };
+
+      // Test Connection
+      async function testConnection() {
+        try {
+          await getDocFromServer(doc(db, 'test', 'connection'));
+          console.log("Firebase Connected Successfully");
+        } catch (error) {
+          if(error instanceof Error && error.message.includes('the client is offline')) {
+            console.error("Please check your Firebase configuration.");
+          }
+        }
+      }
+      testConnection();
+    </script>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
       
@@ -351,13 +395,13 @@
           </button>
           <button onclick="shareTo('facebook')" class="flex flex-col items-center gap-2">
             <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white">
-              <i data-lucide="facebook" class="w-6 h-6"></i>
+              <i data-lucide="Facebook" class="w-6 h-6"></i>
             </div>
             <span class="text-[10px] font-bold">Facebook</span>
           </button>
           <button onclick="shareTo('instagram')" class="flex flex-col items-center gap-2">
             <div class="w-12 h-12 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 rounded-2xl flex items-center justify-center text-white">
-              <i data-lucide="instagram" class="w-6 h-6"></i>
+              <i data-lucide="Instagram" class="w-6 h-6"></i>
             </div>
             <span class="text-[10px] font-bold">Instagram</span>
           </button>
@@ -422,9 +466,10 @@
         </div>
       </div>
     </div>
-    <div id="squad-modal" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-4">
+    <!-- SQUAD MODAL -->
+    <div id="squad-modal" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-4 overflow-y-auto">
       <div class="absolute inset-0 bg-[#0f172a]/95 backdrop-blur-sm" onclick="closeSquadModal()"></div>
-      <div class="glass w-full max-w-lg rounded-3xl overflow-hidden relative animate-in fade-in zoom-in duration-300">
+      <div class="glass w-full max-w-lg rounded-3xl overflow-hidden relative animate-in fade-in zoom-in duration-300 my-auto">
         <div class="p-6 border-b border-white/10 flex justify-between items-center">
           <div>
             <h3 class="text-xl font-black" id="squad-team-name">Plantel da Equipa</h3>
@@ -435,7 +480,7 @@
           </button>
         </div>
         
-        <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto no-scrollbar">
+        <div class="p-6 space-y-6 max-h-[75vh] overflow-y-auto no-scrollbar">
           <div class="space-y-4">
             <div class="flex justify-between items-center">
               <h4 class="text-xs font-bold uppercase text-slate-500">Atletas Inscritos</h4>
@@ -457,16 +502,16 @@
     </div>
 
     <!-- ADD ATHLETE MODAL -->
-    <div id="add-athlete-modal" class="fixed inset-0 z-[130] hidden flex items-center justify-center p-4">
+    <div id="add-athlete-modal" class="fixed inset-0 z-[130] hidden flex items-center justify-center p-4 overflow-y-auto">
       <div class="absolute inset-0 bg-[#0f172a]/95 backdrop-blur-sm" onclick="closeAddAthleteModal()"></div>
-      <div class="glass w-full max-w-md rounded-3xl overflow-hidden relative animate-in fade-in zoom-in duration-300">
+      <div class="glass w-full max-w-md rounded-3xl overflow-hidden relative animate-in fade-in zoom-in duration-300 my-auto">
         <div class="p-6 border-b border-white/10 flex justify-between items-center">
           <h3 class="text-xl font-black" id="add-athlete-modal-title">Novo Atleta</h3>
           <button onclick="closeAddAthleteModal()" class="p-2 hover:bg-white/5 rounded-xl transition-colors">
             <i data-lucide="x" class="w-6 h-6"></i>
           </button>
         </div>
-        <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto no-scrollbar">
+        <div class="p-6 space-y-4 max-h-[80vh] overflow-y-auto no-scrollbar">
           <div class="flex justify-center mb-4">
             <div class="relative group">
               <div id="athlete-photo-preview" class="w-24 h-24 bg-white/5 border-2 border-dashed border-white/10 rounded-2xl flex items-center justify-center overflow-hidden">
@@ -523,9 +568,9 @@
     </div>
 
     <!-- ATHLETE PROFILE MODAL -->
-    <div id="athlete-profile-modal" class="fixed inset-0 z-[160] hidden flex items-center justify-center p-4">
+    <div id="athlete-profile-modal" class="fixed inset-0 z-[160] hidden flex items-center justify-center p-4 overflow-y-auto">
       <div class="absolute inset-0 bg-[#0f172a]/98 backdrop-blur-md" onclick="closeAthleteProfile()"></div>
-      <div class="glass w-full max-w-md rounded-[40px] overflow-hidden relative animate-in fade-in zoom-in duration-300 border border-white/10">
+      <div class="glass w-full max-w-md rounded-[40px] overflow-hidden relative animate-in fade-in zoom-in duration-300 border border-white/10 my-auto">
         <div class="relative h-64">
           <div id="profile-bg" class="absolute inset-0 bg-gradient-to-b from-blue-600 to-[#0f172a]"></div>
           <button onclick="closeAthleteProfile()" class="absolute top-6 right-6 p-2 bg-black/20 backdrop-blur-md rounded-full text-white hover:bg-black/40 transition-colors z-10">
@@ -596,9 +641,9 @@
     </div>
 
     <!-- Add Team Modal -->
-    <div id="add-team-modal" class="fixed inset-0 z-[110] hidden flex items-end sm:items-center justify-center p-4">
+    <div id="add-team-modal" class="fixed inset-0 z-[110] hidden flex items-end sm:items-center justify-center p-4 overflow-y-auto">
       <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeAddTeamModal()"></div>
-      <div class="relative w-full max-w-md bg-[#1e293b] rounded-t-[32px] sm:rounded-[32px] p-8 shadow-2xl border border-white/10 animate-slide-up">
+      <div class="relative w-full max-w-md bg-[#1e293b] rounded-t-[32px] sm:rounded-[32px] p-8 shadow-2xl border border-white/10 animate-slide-up my-auto">
         <button onclick="closeAddTeamModal()" class="absolute top-6 right-6 text-slate-500 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
         
         <div class="text-center mb-8">
@@ -711,24 +756,81 @@
 
     <script>
       // --- Data ---
-      let isAdmin = false; // Simulated admin status
+      let isAdmin = false; 
+      let currentUser = null;
       let tempTeamLogo = null;
       let tempAthletePhoto = null;
       let currentSquadTeamId = null;
       let editingAthleteId = null;
+      let teams = [];
 
-      // Initialize teams from localStorage or use defaults
-      let teams = JSON.parse(localStorage.getItem('ginga_teams')) || [
-        { id: '1', name: 'Saurimo FC', city: 'Lunda Sul', category: 'NACIONAL', gender: 'MASC', season: '2025', logo: 'S', squad: [] },
-        { id: '2', name: 'Seleção Nacional', city: 'Angola', category: 'SELECAO', gender: 'MASC', season: '2025', logo: '🇦🇴', squad: [] },
-        { id: '3', name: 'Coprat FC', city: 'Luanda', category: 'NACIONAL', gender: 'MASC', season: '2025', logo: 'C', squad: [] },
-        { id: '4', name: 'Cazenga Futsal', city: 'Luanda', category: 'PROVINCIAL', gender: 'MASC', season: '2025', logo: 'C', squad: [] },
-        { id: '5', name: 'Palanca Girls', city: 'Luanda', category: 'PROVINCIAL', gender: 'FEM', season: '2025', logo: 'P', squad: [] },
-        { id: '6', name: 'Interclube', city: 'Luanda', category: 'TACA', gender: 'MASC', season: '2026', logo: 'I', squad: [] }
-      ];
+      // Auth Listener
+      window.addEventListener('load', () => {
+        window.auth.onAuthStateChanged((user) => {
+          currentUser = user;
+          if (user) {
+            // Check if user is admin (by email for now)
+            isAdmin = (user.email === "afonsomilitao85@gmail.com");
+            updateAdminUI();
+          } else {
+            isAdmin = false;
+            updateAdminUI();
+          }
+        });
 
-      function saveToStorage() {
-        localStorage.setItem('ginga_teams', JSON.stringify(teams));
+        // Real-time listener for teams
+        const teamsRef = window.firebaseOps.collection(window.db, 'teams');
+        window.firebaseOps.onSnapshot(teamsRef, (snapshot) => {
+          teams = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          renderTeams();
+          if (currentSquadTeamId) renderSquad();
+        }, (error) => {
+          console.error("Firestore Error (LIST):", error);
+        });
+      });
+
+      function updateAdminUI() {
+        document.querySelectorAll('.admin-only').forEach(el => {
+          if (isAdmin) el.classList.remove('hidden');
+          else el.classList.add('hidden');
+        });
+        renderTeams();
+      }
+
+      async function login() {
+        try {
+          await window.firebaseOps.signInWithPopup(window.auth, window.provider);
+        } catch (error) {
+          console.error("Login Error:", error);
+        }
+      }
+
+      async function logout() {
+        try {
+          await window.firebaseOps.signOut(window.auth);
+        } catch (error) {
+          console.error("Logout Error:", error);
+        }
+      }
+
+      async function saveToFirestore(team) {
+        try {
+          const teamRef = window.firebaseOps.doc(window.db, 'teams', team.id);
+          await window.firebaseOps.setDoc(teamRef, team);
+        } catch (error) {
+          console.error("Firestore Error (WRITE):", error);
+          alert("Erro ao guardar dados. Verifica as permissões.");
+        }
+      }
+
+      async function deleteFromFirestore(teamId) {
+        try {
+          const teamRef = window.firebaseOps.doc(window.db, 'teams', teamId);
+          await window.firebaseOps.deleteDoc(teamRef);
+        } catch (error) {
+          console.error("Firestore Error (DELETE):", error);
+          alert("Erro ao apagar dados.");
+        }
       }
 
       function handleLogoUpload(event) {
@@ -820,15 +922,11 @@
       }
 
       function toggleAdmin() {
-        isAdmin = !isAdmin;
-        alert('Modo Admin: ' + (isAdmin ? 'ATIVADO' : 'DESATIVADO'));
-        
-        // Update UI for admin-only elements
-        document.querySelectorAll('.admin-only').forEach(el => {
-          if (isAdmin) el.classList.remove('hidden');
-          else el.classList.add('hidden');
-        });
-        renderTeams();
+        if (!currentUser) {
+          login();
+        } else {
+          logout();
+        }
       }
       const municipalities = ['Belas', 'Cacuaco', 'Cazenga', 'Icolo e Bengo', 'Luanda', 'Quiçama', 'Kilamba Kiaxi', 'Talatona', 'Viana'];
       let selectedMunicipalities = [...municipalities];
@@ -1210,7 +1308,7 @@
           const index = team.squad.findIndex(a => a.id === athleteId);
           if (index !== -1) {
             team.squad.splice(index, 1);
-            saveToStorage();
+            saveToFirestore(team);
             renderSquad();
           }
         }
@@ -1253,7 +1351,7 @@
           team.squad.push(newAthlete);
         }
         
-        saveToStorage();
+        saveToFirestore(team);
         renderSquad();
         closeAddAthleteModal();
       }
@@ -1317,12 +1415,7 @@
 
       function deleteTeam(id) {
         if (confirm('Tem a certeza que deseja apagar esta equipa?')) {
-          const index = teams.findIndex(t => t.id === id);
-          if (index !== -1) {
-            teams.splice(index, 1);
-            saveToStorage();
-            renderTeams();
-          }
+          deleteFromFirestore(id);
         }
       }
 
@@ -1356,22 +1449,20 @@
         const gender = document.getElementById('new-team-gender').value;
         const season = document.getElementById('new-team-season').value;
 
+        let teamData;
         if (editingTeamId) {
-          const index = teams.findIndex(t => t.id === editingTeamId);
-          if (index !== -1) {
-            teams[index] = {
-              ...teams[index],
-              name: name,
-              city: city,
-              gender: gender,
-              season: season,
-              logo: tempTeamLogo || name[0].toUpperCase()
-            };
-            alert('Equipa atualizada com sucesso! 🇦🇴');
-          }
+          const existingTeam = teams.find(t => t.id === editingTeamId);
+          teamData = {
+            ...existingTeam,
+            name: name,
+            city: city,
+            gender: gender,
+            season: season,
+            logo: tempTeamLogo || existingTeam.logo
+          };
           editingTeamId = null;
         } else {
-          const newTeam = {
+          teamData = {
             id: Date.now().toString(),
             name: name,
             city: city,
@@ -1381,11 +1472,10 @@
             logo: tempTeamLogo || name[0].toUpperCase(),
             squad: []
           };
-          teams.push(newTeam);
-          alert('Equipa registada com sucesso! 🇦🇴⚽');
         }
         
-        saveToStorage();
+        saveToFirestore(teamData);
+        
         // Reset logo preview
         tempTeamLogo = null;
         document.getElementById('logo-preview').innerHTML = `<i data-lucide="image" class="w-8 h-8 text-slate-500"></i>`;
@@ -1393,7 +1483,6 @@
         lucide.createIcons();
 
         closeAddTeamModal();
-        renderTeams();
       }
 
       function renderTeams() {

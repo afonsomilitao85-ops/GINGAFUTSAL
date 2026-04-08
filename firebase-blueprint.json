@@ -1,0 +1,46 @@
+{
+  "entities": {
+    "Team": {
+      "title": "Team",
+      "description": "A futsal team registered in the system",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "team": { "type": "string" },
+        "logo": { "type": "string" },
+        "category": { "type": "string" },
+        "season": { "type": "string" },
+        "gender": { "type": "string" },
+        "squad": {
+          "type": "array",
+          "items": { "$ref": "Athlete" }
+        }
+      },
+      "required": ["name", "category", "season", "gender"]
+    },
+    "Athlete": {
+      "title": "Athlete",
+      "description": "An athlete belonging to a team",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "pos": { "type": "string" },
+        "number": { "type": "string" },
+        "photo": { "type": "string" },
+        "age": { "type": "string" },
+        "height": { "type": "string" },
+        "nat": { "type": "string" },
+        "contract": { "type": "string" }
+      },
+      "required": ["name", "pos", "number"]
+    }
+  },
+  "firestore": {
+    "/teams/{teamId}": {
+      "schema": "Team",
+      "description": "Collection of futsal teams"
+    }
+  }
+}

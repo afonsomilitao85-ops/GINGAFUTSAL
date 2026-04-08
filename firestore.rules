@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: teams
+    // Document ID: auto-generated or teamId
+    // Fields:
+    //   - id: string
+    //   - name: string (required)
+    //   - team: string (alias for name)
+    //   - logo: string (URL)
+    //   - category: string (required)
+    //   - season: string (required)
+    //   - gender: string (required)
+    //   - squad: list of maps (Athlete objects)
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      // For now, allowing the specific user email provided in context
+      return isAuthenticated() && 
+             (request.auth.token.email == "afonsomilitao85@gmail.com" && request.auth.token.email_verified == true);
+    }
+
+    function isValidTeam(data) {
+      return data.keys().hasAll(['name', 'category', 'season', 'gender']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.category is string &&
+             data.season is string &&
+             data.gender is string &&
+             (!('logo' in data) || (data.logo is string && data.logo.size() < 2000)) &&
+             (!('squad' in data) || data.squad is list);
+    }
+
+    match /teams/{teamId} {
+      // Everyone can read the teams
+      allow read: if true;
+      
+      // Only Admin can create, update, or delete
+      allow create: if isAdmin() && isValidTeam(request.resource.data);
+      allow update: if isAdmin() && isValidTeam(request.resource.data);
+      allow delete: if isAdmin();
+    }
+  }
+}
