@@ -461,12 +461,23 @@
       <div class="absolute inset-0 bg-[#0f172a]/95 backdrop-blur-sm" onclick="closeAddAthleteModal()"></div>
       <div class="glass w-full max-w-md rounded-3xl overflow-hidden relative animate-in fade-in zoom-in duration-300">
         <div class="p-6 border-b border-white/10 flex justify-between items-center">
-          <h3 class="text-xl font-black">Novo Atleta</h3>
+          <h3 class="text-xl font-black" id="add-athlete-modal-title">Novo Atleta</h3>
           <button onclick="closeAddAthleteModal()" class="p-2 hover:bg-white/5 rounded-xl transition-colors">
             <i data-lucide="x" class="w-6 h-6"></i>
           </button>
         </div>
-        <div class="p-6 space-y-4">
+        <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto no-scrollbar">
+          <div class="flex justify-center mb-4">
+            <div class="relative group">
+              <div id="athlete-photo-preview" class="w-24 h-24 bg-white/5 border-2 border-dashed border-white/10 rounded-2xl flex items-center justify-center overflow-hidden">
+                <i data-lucide="user" class="w-8 h-8 text-slate-500"></i>
+              </div>
+              <input type="file" id="athlete-photo-input" accept="image/*" onchange="handleAthletePhotoUpload(event)" class="hidden">
+              <button type="button" onclick="document.getElementById('athlete-photo-input').click()" class="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                <i data-lucide="camera" class="w-4 h-4 text-white"></i>
+              </button>
+            </div>
+          </div>
           <div class="space-y-2">
             <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Nome Completo</label>
             <input type="text" id="athlete-name" placeholder="Ex: Bebucho Silva" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500">
@@ -486,7 +497,100 @@
               <input type="number" id="athlete-number" placeholder="10" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500">
             </div>
           </div>
-          <button onclick="saveAthlete()" class="w-full py-4 bg-amber-500 text-[#0f172a] font-black rounded-2xl shadow-lg shadow-amber-500/20 uppercase tracking-widest text-xs mt-4">Adicionar ao Plantel</button>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Idade</label>
+              <input type="number" id="athlete-age" placeholder="25" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Altura (cm)</label>
+              <input type="number" id="athlete-height" placeholder="175" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Nacionalidade</label>
+              <input type="text" id="athlete-nat" placeholder="Angolana" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Fim de Contrato</label>
+              <input type="date" id="athlete-contract" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+          </div>
+          <button onclick="saveAthlete()" class="w-full py-4 bg-amber-500 text-[#0f172a] font-black rounded-2xl shadow-lg shadow-amber-500/20 uppercase tracking-widest text-xs mt-4">Guardar Atleta</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ATHLETE PROFILE MODAL -->
+    <div id="athlete-profile-modal" class="fixed inset-0 z-[160] hidden flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-[#0f172a]/98 backdrop-blur-md" onclick="closeAthleteProfile()"></div>
+      <div class="glass w-full max-w-md rounded-[40px] overflow-hidden relative animate-in fade-in zoom-in duration-300 border border-white/10">
+        <div class="relative h-64">
+          <div id="profile-bg" class="absolute inset-0 bg-gradient-to-b from-blue-600 to-[#0f172a]"></div>
+          <button onclick="closeAthleteProfile()" class="absolute top-6 right-6 p-2 bg-black/20 backdrop-blur-md rounded-full text-white hover:bg-black/40 transition-colors z-10">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+          
+          <div class="absolute inset-0 flex flex-col items-center justify-center pt-8">
+            <div id="profile-photo" class="w-32 h-32 rounded-3xl border-4 border-white/10 shadow-2xl overflow-hidden bg-white/5 mb-4">
+              <!-- Photo here -->
+            </div>
+            <h3 id="profile-name" class="text-2xl font-black text-white">Nome do Atleta</h3>
+            <p id="profile-pos-num" class="text-blue-400 font-bold text-sm uppercase tracking-widest">ALA • #10</p>
+          </div>
+        </div>
+
+        <div class="p-8 space-y-8">
+          <div class="grid grid-cols-3 gap-4">
+            <div class="text-center">
+              <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Idade</p>
+              <p id="profile-age" class="text-lg font-black text-white">-</p>
+            </div>
+            <div class="text-center border-x border-white/5">
+              <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Altura</p>
+              <p id="profile-height" class="text-lg font-black text-white">-</p>
+            </div>
+            <div class="text-center">
+              <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Nacionalidade</p>
+              <p id="profile-nat" class="text-lg font-black text-white">-</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="glass p-4 rounded-2xl flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-amber-500/20 text-amber-500 rounded-xl flex items-center justify-center">
+                  <i data-lucide="file-text" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <p class="text-[10px] text-slate-500 uppercase font-bold">Fim de Contrato</p>
+                  <p id="profile-contract" class="font-bold text-sm text-white">-</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div class="glass p-4 rounded-2xl">
+                <p class="text-[10px] text-slate-500 uppercase font-bold mb-2">Golos</p>
+                <div class="flex items-end gap-2">
+                  <span class="text-2xl font-black text-white">12</span>
+                  <span class="text-[10px] text-green-500 font-bold mb-1">+2 este mês</span>
+                </div>
+              </div>
+              <div class="glass p-4 rounded-2xl">
+                <p class="text-[10px] text-slate-500 uppercase font-bold mb-2">Assistências</p>
+                <div class="flex items-end gap-2">
+                  <span class="text-2xl font-black text-white">8</span>
+                  <span class="text-[10px] text-blue-500 font-bold mb-1">Top 3 Liga</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button onclick="closeAthleteProfile()" class="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/10 transition-colors">
+            FECHAR FICHA TÉCNICA
+          </button>
         </div>
       </div>
     </div>
@@ -609,6 +713,23 @@
       // --- Data ---
       let isAdmin = false; // Simulated admin status
       let tempTeamLogo = null;
+      let tempAthletePhoto = null;
+      let currentSquadTeamId = null;
+      let editingAthleteId = null;
+
+      // Initialize teams from localStorage or use defaults
+      let teams = JSON.parse(localStorage.getItem('ginga_teams')) || [
+        { id: '1', name: 'Saurimo FC', city: 'Lunda Sul', category: 'NACIONAL', gender: 'MASC', season: '2025', logo: 'S', squad: [] },
+        { id: '2', name: 'Seleção Nacional', city: 'Angola', category: 'SELECAO', gender: 'MASC', season: '2025', logo: '🇦🇴', squad: [] },
+        { id: '3', name: 'Coprat FC', city: 'Luanda', category: 'NACIONAL', gender: 'MASC', season: '2025', logo: 'C', squad: [] },
+        { id: '4', name: 'Cazenga Futsal', city: 'Luanda', category: 'PROVINCIAL', gender: 'MASC', season: '2025', logo: 'C', squad: [] },
+        { id: '5', name: 'Palanca Girls', city: 'Luanda', category: 'PROVINCIAL', gender: 'FEM', season: '2025', logo: 'P', squad: [] },
+        { id: '6', name: 'Interclube', city: 'Luanda', category: 'TACA', gender: 'MASC', season: '2026', logo: 'I', squad: [] }
+      ];
+
+      function saveToStorage() {
+        localStorage.setItem('ginga_teams', JSON.stringify(teams));
+      }
 
       function handleLogoUpload(event) {
         const file = event.target.files[0];
@@ -617,6 +738,18 @@
           reader.onload = function(e) {
             tempTeamLogo = e.target.result;
             document.getElementById('logo-preview').innerHTML = `<img src="${tempTeamLogo}" class="w-full h-full object-cover rounded-xl">`;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      function handleAthletePhotoUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            tempAthletePhoto = e.target.result;
+            document.getElementById('athlete-photo-preview').innerHTML = `<img src="${tempAthletePhoto}" class="w-full h-full object-cover rounded-xl">`;
           };
           reader.readAsDataURL(file);
         }
@@ -718,15 +851,6 @@
         { id: '1', name: 'Pavilhão da Cidadela', location: 'Luanda Centro', price: 15000, image: 'https://picsum.photos/seed/field1/400/200' },
         { id: '2', name: 'Dream Space', location: 'Viana', price: 25000, image: 'https://picsum.photos/seed/field2/400/200' },
         { id: '3', name: 'Campo Multiuso Cazenga', location: 'Cazenga', price: 8000, image: 'https://picsum.photos/seed/field3/400/200' }
-      ];
-
-      const teams = [
-        { id: '1', name: 'Saurimo FC', city: 'Lunda Sul', category: 'NACIONAL', gender: 'MASC', season: '2025', logo: 'S' },
-        { id: '2', name: 'Seleção Nacional', city: 'Angola', category: 'SELECAO', gender: 'MASC', season: '2025', logo: '🇦🇴' },
-        { id: '3', name: 'Coprat FC', city: 'Luanda', category: 'NACIONAL', gender: 'MASC', season: '2025', logo: 'C' },
-        { id: '4', name: 'Cazenga Futsal', city: 'Luanda', category: 'PROVINCIAL', gender: 'MASC', season: '2025', logo: 'C' },
-        { id: '5', name: 'Palanca Girls', city: 'Luanda', category: 'PROVINCIAL', gender: 'FEM', season: '2025', logo: 'P' },
-        { id: '6', name: 'Interclube', city: 'Luanda', category: 'TACA', gender: 'MASC', season: '2026', logo: 'I' }
       ];
 
       const ads = [
@@ -979,12 +1103,53 @@
       }
 
       function openSquadModal(teamId) {
+        currentSquadTeamId = teamId;
         const team = teams.find(t => t.id === teamId);
         if (team) {
           document.getElementById('squad-team-name').innerText = 'Plantel: ' + (team.name || team.team);
+          renderSquad();
           document.getElementById('squad-modal').classList.remove('hidden');
           document.getElementById('squad-modal').classList.add('flex');
         }
+      }
+
+      function renderSquad() {
+        const team = teams.find(t => t.id === currentSquadTeamId);
+        if (!team) return;
+
+        const squadList = document.getElementById('squad-list');
+        if (!team.squad) team.squad = [];
+
+        if (team.squad.length === 0) {
+          squadList.innerHTML = `
+            <div class="glass p-8 rounded-2xl text-center">
+              <p class="text-slate-500 text-[10px]">Nenhum atleta inscrito.</p>
+            </div>
+          `;
+        } else {
+          squadList.innerHTML = team.squad.map(a => `
+            <div class="glass p-3 rounded-xl flex items-center justify-between group">
+              <div class="flex items-center gap-3 cursor-pointer" onclick="openAthleteProfile('${a.id}')">
+                <div class="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center font-bold overflow-hidden">
+                  ${a.photo ? `<img src="${a.photo}" class="w-full h-full object-cover">` : a.name.substring(0,2).toUpperCase()}
+                </div>
+                <div>
+                  <p class="text-sm font-bold">${a.name}</p>
+                  <p class="text-[10px] text-slate-500">${a.pos} • #${a.number}</p>
+                </div>
+              </div>
+              <div class="flex gap-1">
+                <button onclick="editAthlete('${a.id}')" class="p-2 text-slate-500 hover:text-blue-400 transition-colors">
+                  <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="deleteAthlete('${a.id}')" class="p-2 text-slate-500 hover:text-red-500 transition-colors">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          `).join('');
+        }
+        lucide.createIcons();
       }
 
       function closeSquadModal() {
@@ -993,8 +1158,62 @@
       }
 
       function openAddAthleteModal() {
+        editingAthleteId = null;
+        // Reset athlete form
+        document.getElementById('athlete-name').value = '';
+        document.getElementById('athlete-number').value = '';
+        document.getElementById('athlete-pos').value = 'ALA';
+        document.getElementById('athlete-age').value = '';
+        document.getElementById('athlete-height').value = '';
+        document.getElementById('athlete-nat').value = 'Angolana';
+        document.getElementById('athlete-contract').value = '';
+        tempAthletePhoto = null;
+        document.getElementById('athlete-photo-preview').innerHTML = `<i data-lucide="user" class="w-8 h-8 text-slate-500"></i>`;
+        document.getElementById('add-athlete-modal-title').innerText = 'Novo Atleta';
+        lucide.createIcons();
+
         document.getElementById('add-athlete-modal').classList.remove('hidden');
         document.getElementById('add-athlete-modal').classList.add('flex');
+      }
+
+      function editAthlete(athleteId) {
+        const team = teams.find(t => t.id === currentSquadTeamId);
+        const athlete = team.squad.find(a => a.id === athleteId);
+        if (!athlete) return;
+
+        editingAthleteId = athleteId;
+        document.getElementById('athlete-name').value = athlete.name;
+        document.getElementById('athlete-number').value = athlete.number;
+        document.getElementById('athlete-pos').value = athlete.pos;
+        document.getElementById('athlete-age').value = athlete.age || '';
+        document.getElementById('athlete-height').value = athlete.height || '';
+        document.getElementById('athlete-nat').value = athlete.nat || 'Angolana';
+        document.getElementById('athlete-contract').value = athlete.contract || '';
+        
+        if (athlete.photo) {
+          tempAthletePhoto = athlete.photo;
+          document.getElementById('athlete-photo-preview').innerHTML = `<img src="${tempAthletePhoto}" class="w-full h-full object-cover rounded-xl">`;
+        } else {
+          tempAthletePhoto = null;
+          document.getElementById('athlete-photo-preview').innerHTML = `<i data-lucide="user" class="w-8 h-8 text-slate-500"></i>`;
+          lucide.createIcons();
+        }
+
+        document.getElementById('add-athlete-modal-title').innerText = 'Editar Atleta';
+        document.getElementById('add-athlete-modal').classList.remove('hidden');
+        document.getElementById('add-athlete-modal').classList.add('flex');
+      }
+
+      function deleteAthlete(athleteId) {
+        if (confirm('Tem a certeza que deseja apagar este atleta?')) {
+          const team = teams.find(t => t.id === currentSquadTeamId);
+          const index = team.squad.findIndex(a => a.id === athleteId);
+          if (index !== -1) {
+            team.squad.splice(index, 1);
+            saveToStorage();
+            renderSquad();
+          }
+        }
       }
 
       function closeAddAthleteModal() {
@@ -1006,33 +1225,79 @@
         const name = document.getElementById('athlete-name').value;
         const pos = document.getElementById('athlete-pos').value;
         const num = document.getElementById('athlete-number').value;
+        const age = document.getElementById('athlete-age').value;
+        const height = document.getElementById('athlete-height').value;
+        const nat = document.getElementById('athlete-nat').value;
+        const contract = document.getElementById('athlete-contract').value;
 
         if (!name) return alert('Insere o nome do atleta');
 
-        const squadList = document.getElementById('squad-list');
-        const athleteHtml = `
-          <div class="glass p-3 rounded-xl flex items-center justify-between animate-in slide-in-from-right duration-300">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center font-bold">${name.substring(0,2).toUpperCase()}</div>
-              <div>
-                <p class="text-sm font-bold">${name}</p>
-                <p class="text-[10px] text-slate-500">${pos} • #${num}</p>
-              </div>
-            </div>
-            <button onclick="this.parentElement.remove()" class="text-red-500/50 hover:text-red-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-          </div>
-        `;
+        const team = teams.find(t => t.id === currentSquadTeamId);
+        if (!team.squad) team.squad = [];
+
+        if (editingAthleteId) {
+          const index = team.squad.findIndex(a => a.id === editingAthleteId);
+          if (index !== -1) {
+            team.squad[index] = {
+              ...team.squad[index],
+              name, pos, number: num, age, height, nat, contract,
+              photo: tempAthletePhoto
+            };
+          }
+        } else {
+          const newAthlete = {
+            id: Date.now().toString(),
+            name, pos, number: num, age, height, nat, contract,
+            photo: tempAthletePhoto
+          };
+          team.squad.push(newAthlete);
+        }
         
-        squadList.insertAdjacentHTML('beforeend', athleteHtml);
-        lucide.createIcons();
+        saveToStorage();
+        renderSquad();
         closeAddAthleteModal();
+      }
+
+      function openAthleteProfile(athleteId) {
+        const team = teams.find(t => t.id === currentSquadTeamId);
+        const athlete = team.squad.find(a => a.id === athleteId);
+        if (!athlete) return;
+
+        document.getElementById('profile-name').innerText = athlete.name;
+        document.getElementById('profile-pos-num').innerText = `${athlete.pos} • #${athlete.number}`;
+        document.getElementById('profile-age').innerText = athlete.age || '-';
+        document.getElementById('profile-height').innerText = athlete.height ? athlete.height + ' cm' : '-';
+        document.getElementById('profile-nat').innerText = athlete.nat || '-';
+        document.getElementById('profile-contract').innerText = athlete.contract || 'Sem data';
         
-        // Clear inputs
-        document.getElementById('athlete-name').value = '';
-        document.getElementById('athlete-number').value = '';
+        if (athlete.photo) {
+          document.getElementById('profile-photo').innerHTML = `<img src="${athlete.photo}" class="w-full h-full object-cover">`;
+        } else {
+          document.getElementById('profile-photo').innerHTML = `<div class="w-full h-full flex items-center justify-center text-4xl font-black text-white/20">${athlete.name.substring(0,2).toUpperCase()}</div>`;
+        }
+
+        document.getElementById('athlete-profile-modal').classList.remove('hidden');
+        document.getElementById('athlete-profile-modal').classList.add('flex');
+        lucide.createIcons();
+      }
+
+      function closeAthleteProfile() {
+        document.getElementById('athlete-profile-modal').classList.add('hidden');
+        document.getElementById('athlete-profile-modal').classList.remove('flex');
       }
 
       function handleAddTeam() {
+        // Reset form for new team
+        editingTeamId = null;
+        document.getElementById('new-team-name').value = '';
+        document.getElementById('new-team-city').value = 'Luanda';
+        document.getElementById('new-team-gender').value = 'MASC';
+        document.getElementById('new-team-season').value = '2025';
+        tempTeamLogo = null;
+        document.getElementById('logo-preview').innerHTML = `<i data-lucide="image" class="w-8 h-8 text-slate-500"></i>`;
+        document.getElementById('add-team-modal-title').innerText = 'Registar Nova Equipa';
+        lucide.createIcons();
+
         if (isAdmin) {
           openAddTeamModal();
         } else {
@@ -1055,6 +1320,7 @@
           const index = teams.findIndex(t => t.id === id);
           if (index !== -1) {
             teams.splice(index, 1);
+            saveToStorage();
             renderTeams();
           }
         }
@@ -1112,12 +1378,14 @@
             category: 'PROVINCIAL',
             gender: gender,
             season: season,
-            logo: tempTeamLogo || name[0].toUpperCase()
+            logo: tempTeamLogo || name[0].toUpperCase(),
+            squad: []
           };
           teams.push(newTeam);
           alert('Equipa registada com sucesso! 🇦🇴⚽');
         }
         
+        saveToStorage();
         // Reset logo preview
         tempTeamLogo = null;
         document.getElementById('logo-preview').innerHTML = `<i data-lucide="image" class="w-8 h-8 text-slate-500"></i>`;
