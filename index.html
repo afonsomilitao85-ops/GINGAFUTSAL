@@ -124,57 +124,106 @@
         </div>
       </section>
 
-      <!-- EQUIPAS TAB -->
+      <!-- COMPETIÇÕES TAB (Main Container) -->
       <section id="equipas" class="tab-content space-y-6">
         <div class="px-2 space-y-1">
-          <h2 class="text-2xl font-bold">Equipas</h2>
-          <p class="text-xs text-slate-400">Gere e acompanha as equipas do país</p>
+          <h2 class="text-2xl font-bold">Competições</h2>
+          <p class="text-xs text-slate-400">Gere equipas, torneios e seleções</p>
         </div>
 
-        <!-- Submenu Competitions -->
-        <div class="flex gap-4 overflow-x-auto no-scrollbar px-2 border-b border-white/5">
-          <button onclick="filterTeamCategory('PROVINCIAL')" class="team-cat-btn pb-2 text-xs font-bold whitespace-nowrap border-b-2 border-blue-500 text-blue-500">Provincial</button>
-          <button onclick="filterTeamCategory('NACIONAL')" class="team-cat-btn pb-2 text-xs font-bold whitespace-nowrap border-b-2 border-transparent text-slate-500">Nacional</button>
-          <button onclick="filterTeamCategory('TACA')" class="team-cat-btn pb-2 text-xs font-bold whitespace-nowrap border-b-2 border-transparent text-slate-500">Taça de Angola</button>
-          <button onclick="filterTeamCategory('SELECAO')" class="team-cat-btn pb-2 text-xs font-bold whitespace-nowrap border-b-2 border-transparent text-slate-500">Seleção Nacional</button>
-          <button onclick="filterTeamCategory('CLASSIFICACAO')" class="team-cat-btn pb-2 text-xs font-bold whitespace-nowrap border-b-2 border-transparent text-slate-500">Classificação</button>
+        <!-- Main Submenu -->
+        <div class="flex p-1 bg-white/5 rounded-2xl border border-white/10 mx-2">
+          <button onclick="switchSubTab('sub-equipas')" class="sub-nav-btn flex-1 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all bg-blue-600 text-white" id="sub-nav-equipas">Equipas</button>
+          <button onclick="switchSubTab('sub-competicoes')" class="sub-nav-btn flex-1 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all text-slate-400" id="sub-nav-competicoes">Competições</button>
+          <button onclick="switchSubTab('sub-selecao')" class="sub-nav-btn flex-1 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all text-slate-400" id="sub-nav-selecao">Seleção</button>
         </div>
 
-        <!-- Add Team Card -->
-        <button onclick="handleAddTeam()" class="w-full glass p-4 rounded-2xl flex items-center gap-4 border-dashed border-2 border-white/10 hover:border-blue-500/50 transition-all">
-          <div class="w-12 h-12 bg-blue-500/20 text-blue-500 rounded-xl flex items-center justify-center">
-            <i data-lucide="plus" class="w-6 h-6"></i>
-          </div>
-          <div class="text-left">
-            <p class="font-bold text-sm">Adicionar Equipa</p>
-            <p class="text-[10px] text-slate-500">Regista a tua equipa no sistema GINGA</p>
-          </div>
-        </button>
+        <!-- SUB-TAB: EQUIPAS -->
+        <div id="sub-equipas" class="sub-tab-content space-y-6">
+          <!-- Add Team Card -->
+          <button onclick="handleAddTeam()" class="w-full glass p-4 rounded-2xl flex items-center gap-4 border-dashed border-2 border-white/10 hover:border-blue-500/50 transition-all">
+            <div class="w-12 h-12 bg-blue-500/20 text-blue-500 rounded-xl flex items-center justify-center">
+              <i data-lucide="plus" class="w-6 h-6"></i>
+            </div>
+            <div class="text-left">
+              <p class="font-bold text-sm">Adicionar Equipa</p>
+              <p class="text-[10px] text-slate-500">Regista a tua equipa e plantel</p>
+            </div>
+          </button>
 
-        <div class="space-y-4">
-          <div class="flex gap-2">
-            <div class="flex-1 relative">
-              <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
-              <input type="text" id="team-search" oninput="renderTeams()" placeholder="Pesquisar equipa..." class="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-blue-500">
+          <div class="space-y-4">
+            <div class="flex gap-2">
+              <div class="flex-1 relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                <input type="text" id="team-search" oninput="renderTeams()" placeholder="Pesquisar equipa..." class="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-blue-500">
+              </div>
+              <button class="p-3 bg-blue-500 rounded-xl text-white"><i data-lucide="sliders-horizontal" class="w-5 h-5"></i></button>
             </div>
-            <button class="p-3 bg-blue-500 rounded-xl text-white"><i data-lucide="sliders-horizontal" class="w-5 h-5"></i></button>
+            
+            <div class="flex gap-2 overflow-x-auto no-scrollbar">
+              <div class="flex gap-2" id="season-filters">
+                <button onclick="setSeason('2025')" class="season-btn px-4 py-2 rounded-xl text-[10px] font-bold border border-blue-500 bg-blue-500/20 text-blue-400">2025</button>
+                <button onclick="setSeason('2026')" class="season-btn px-4 py-2 rounded-xl text-[10px] font-bold border border-white/10 bg-white/5 text-slate-500">2026</button>
+              </div>
+              <div class="w-px h-8 bg-white/10 mx-1"></div>
+              <div class="flex gap-2" id="gender-filters">
+                <button onclick="setGender('MASC')" class="gender-btn px-4 py-2 rounded-xl text-[10px] font-bold border border-blue-500 bg-blue-500/20 text-blue-400">Sénior Masc.</button>
+                <button onclick="setGender('FEM')" class="gender-btn px-4 py-2 rounded-xl text-[10px] font-bold border border-white/10 bg-white/5 text-slate-500">Sénior Fem.</button>
+              </div>
+            </div>
           </div>
-          
-          <div class="flex gap-2 overflow-x-auto no-scrollbar">
-            <div class="flex gap-2" id="season-filters">
-              <button onclick="setSeason('2025')" class="season-btn px-4 py-2 rounded-xl text-[10px] font-bold border border-blue-500 bg-blue-500/20 text-blue-400">2025</button>
-              <button onclick="setSeason('2026')" class="season-btn px-4 py-2 rounded-xl text-[10px] font-bold border border-white/10 bg-white/5 text-slate-500">2026</button>
-            </div>
-            <div class="w-px h-8 bg-white/10 mx-1"></div>
-            <div class="flex gap-2" id="gender-filters">
-              <button onclick="setGender('MASC')" class="gender-btn px-4 py-2 rounded-xl text-[10px] font-bold border border-blue-500 bg-blue-500/20 text-blue-400">Sénior Masc.</button>
-              <button onclick="setGender('FEM')" class="gender-btn px-4 py-2 rounded-xl text-[10px] font-bold border border-white/10 bg-white/5 text-slate-500">Sénior Fem.</button>
-            </div>
+
+          <div class="grid gap-4" id="team-list">
+            <!-- Teams injected here -->
           </div>
         </div>
 
-        <div class="grid gap-4" id="team-list">
-          <!-- Teams injected here -->
+        <!-- SUB-TAB: COMPETIÇÕES -->
+        <div id="sub-competicoes" class="sub-tab-content hidden space-y-6">
+          <div class="glass p-6 rounded-2xl border-l-4 border-amber-500">
+            <h3 class="font-black text-lg mb-2">Gestão de Torneios</h3>
+            <p class="text-xs text-slate-400 mb-4">Inscreve a tua equipa nas competições oficiais de Luanda.</p>
+            <div class="flex gap-2">
+              <button onclick="openCompetitionSignupModal()" class="flex-1 py-3 bg-amber-500 text-[#0f172a] font-black rounded-xl text-[10px] uppercase tracking-widest">Inscrever Equipa</button>
+              <button onclick="handleAddCompetition()" class="px-4 py-3 bg-white/5 border border-white/10 text-white rounded-xl hover:bg-white/10 transition-colors admin-only hidden">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid gap-4" id="competition-list">
+            <!-- Competitions injected here -->
+          </div>
+        </div>
+
+        <!-- SUB-TAB: SELEÇÃO NACIONAL -->
+        <div id="sub-selecao" class="sub-tab-content hidden space-y-6">
+          <div class="relative h-48 rounded-3xl overflow-hidden mb-6">
+            <img src="https://picsum.photos/seed/angola/800/400" class="w-full h-full object-cover" alt="Seleção">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0f172a] to-transparent"></div>
+            <div class="absolute bottom-4 left-4">
+              <h3 class="text-xl font-black text-white">Palancas Negras</h3>
+              <p class="text-xs text-amber-500 font-bold">Plantel Oficial 2025</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4" id="national-squad">
+            <!-- National squad injected here -->
+            <div class="glass p-4 rounded-2xl text-center">
+              <div class="w-16 h-16 rounded-full mx-auto mb-3 border-2 border-amber-500 p-0.5">
+                <img src="https://picsum.photos/seed/p1/100/100" class="w-full h-full rounded-full object-cover" alt="Player">
+              </div>
+              <h4 class="font-bold text-sm">Gomito</h4>
+              <p class="text-[10px] text-slate-500 uppercase">Fixo • Luanda</p>
+            </div>
+            <div class="glass p-4 rounded-2xl text-center">
+              <div class="w-16 h-16 rounded-full mx-auto mb-3 border-2 border-amber-500 p-0.5">
+                <img src="https://picsum.photos/seed/p2/100/100" class="w-full h-full rounded-full object-cover" alt="Player">
+              </div>
+              <h4 class="font-bold text-sm">Bebucho</h4>
+              <p class="text-[10px] text-slate-500 uppercase">Ala • Luanda</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -270,8 +319,8 @@
         <span class="text-[8px] font-bold uppercase tracking-tighter">Scout</span>
       </button>
       <button onclick="switchTab('equipas')" class="nav-btn flex flex-col items-center gap-1 text-slate-500" id="nav-equipas">
-        <i data-lucide="users" class="w-5 h-5"></i>
-        <span class="text-[8px] font-bold uppercase tracking-tighter">Equipas</span>
+        <i data-lucide="trophy" class="w-5 h-5"></i>
+        <span class="text-[8px] font-bold uppercase tracking-tighter">Competições</span>
       </button>
       <div class="relative -top-4">
         <button onclick="switchTab('placar')" class="w-12 h-12 bg-blue-600 text-white rounded-2xl shadow-2xl flex items-center justify-center transition-all duration-300" id="nav-placar">
@@ -316,6 +365,132 @@
       </div>
     </div>
 
+    <!-- COMPETITION SIGNUP MODAL -->
+    <div id="comp-signup-modal" class="fixed inset-0 z-[140] hidden flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-[#0f172a]/95 backdrop-blur-sm" onclick="closeCompSignupModal()"></div>
+      <div class="glass w-full max-w-md rounded-3xl overflow-hidden relative animate-in fade-in zoom-in duration-300">
+        <div class="p-6 border-b border-white/10 flex justify-between items-center">
+          <h3 class="text-xl font-black">Inscrição em Torneio</h3>
+          <button onclick="closeCompSignupModal()" class="p-2 hover:bg-white/5 rounded-xl transition-colors">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+        <div class="p-6 space-y-4">
+          <div class="space-y-2">
+            <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Selecionar Competição</label>
+            <select id="signup-comp-id" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 appearance-none">
+              <option value="provincial">Campeonato Provincial de Luanda</option>
+              <option value="nacional">Campeonato Nacional</option>
+              <option value="taca">Taça de Angola</option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Selecionar a tua Equipa</label>
+            <select id="signup-team-id" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 appearance-none">
+              <!-- Teams will be injected here -->
+            </select>
+          </div>
+          <button onclick="confirmCompSignup()" class="w-full py-4 bg-blue-600 text-white font-black rounded-2xl shadow-lg shadow-blue-600/20 uppercase tracking-widest text-xs mt-4">Confirmar Inscrição</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD COMPETITION MODAL -->
+    <div id="add-comp-modal" class="fixed inset-0 z-[150] hidden flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-[#0f172a]/95 backdrop-blur-sm" onclick="closeAddCompModal()"></div>
+      <div class="glass w-full max-w-md rounded-3xl overflow-hidden relative animate-in fade-in zoom-in duration-300">
+        <div class="p-6 border-b border-white/10 flex justify-between items-center">
+          <h3 class="text-xl font-black">Nova Competição</h3>
+          <button onclick="closeAddCompModal()" class="p-2 hover:bg-white/5 rounded-xl transition-colors">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+        <div class="p-6 space-y-4">
+          <div class="space-y-2">
+            <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Nome da Competição</label>
+            <input type="text" id="new-comp-name" placeholder="Ex: Taça da Amizade" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Âmbito</label>
+            <select id="new-comp-scope" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 appearance-none">
+              <option value="PROVINCIAL">Provincial</option>
+              <option value="NACIONAL">Nacional</option>
+              <option value="INTERNACIONAL">Internacional</option>
+            </select>
+          </div>
+          <button onclick="saveNewCompetition()" class="w-full py-4 bg-amber-500 text-[#0f172a] font-black rounded-2xl shadow-lg shadow-amber-500/20 uppercase tracking-widest text-xs mt-4">Criar Competição</button>
+        </div>
+      </div>
+    </div>
+    <div id="squad-modal" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-[#0f172a]/95 backdrop-blur-sm" onclick="closeSquadModal()"></div>
+      <div class="glass w-full max-w-lg rounded-3xl overflow-hidden relative animate-in fade-in zoom-in duration-300">
+        <div class="p-6 border-b border-white/10 flex justify-between items-center">
+          <div>
+            <h3 class="text-xl font-black" id="squad-team-name">Plantel da Equipa</h3>
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest">Época 2025 • Luanda</p>
+          </div>
+          <button onclick="closeSquadModal()" class="p-2 hover:bg-white/5 rounded-xl transition-colors">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+        
+        <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto no-scrollbar">
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <h4 class="text-xs font-bold uppercase text-slate-500">Atletas Inscritos</h4>
+              <button onclick="openAddAthleteModal()" class="text-[10px] font-bold text-blue-400 flex items-center gap-1">
+                <i data-lucide="plus" class="w-3 h-3"></i> ADICIONAR ATLETA
+              </button>
+            </div>
+            
+            <div id="squad-list" class="grid gap-3">
+              <!-- Athletes injected here -->
+            </div>
+          </div>
+        </div>
+
+        <div class="p-6 bg-white/5 border-t border-white/10">
+          <button onclick="closeSquadModal()" class="w-full py-4 bg-blue-600 text-white font-black rounded-2xl shadow-lg shadow-blue-600/20 uppercase tracking-widest text-xs">Guardar Plantel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD ATHLETE MODAL -->
+    <div id="add-athlete-modal" class="fixed inset-0 z-[130] hidden flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-[#0f172a]/95 backdrop-blur-sm" onclick="closeAddAthleteModal()"></div>
+      <div class="glass w-full max-w-md rounded-3xl overflow-hidden relative animate-in fade-in zoom-in duration-300">
+        <div class="p-6 border-b border-white/10 flex justify-between items-center">
+          <h3 class="text-xl font-black">Novo Atleta</h3>
+          <button onclick="closeAddAthleteModal()" class="p-2 hover:bg-white/5 rounded-xl transition-colors">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+        <div class="p-6 space-y-4">
+          <div class="space-y-2">
+            <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Nome Completo</label>
+            <input type="text" id="athlete-name" placeholder="Ex: Bebucho Silva" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Posição</label>
+              <select id="athlete-pos" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 appearance-none">
+                <option value="GR">Guarda-Redes</option>
+                <option value="FIXO">Fixo</option>
+                <option value="ALA">Ala</option>
+                <option value="PIVOT">Pivot</option>
+              </select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Número</label>
+              <input type="number" id="athlete-number" placeholder="10" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+          </div>
+          <button onclick="saveAthlete()" class="w-full py-4 bg-amber-500 text-[#0f172a] font-black rounded-2xl shadow-lg shadow-amber-500/20 uppercase tracking-widest text-xs mt-4">Adicionar ao Plantel</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add Team Modal -->
     <div id="add-team-modal" class="fixed inset-0 z-[110] hidden flex items-end sm:items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeAddTeamModal()"></div>
@@ -326,11 +501,23 @@
           <div class="w-16 h-16 bg-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <i data-lucide="plus-circle" class="w-8 h-8"></i>
           </div>
-          <h3 class="text-xl font-bold">Registar Nova Equipa</h3>
+          <h3 class="text-xl font-bold" id="add-team-modal-title">Registar Nova Equipa</h3>
           <p class="text-slate-400 text-sm">Preenche os dados oficiais da tua equipa</p>
         </div>
 
         <form onsubmit="event.preventDefault(); saveNewTeam();" class="space-y-4">
+          <div class="flex justify-center mb-6">
+            <div class="relative group">
+              <div id="logo-preview" class="w-24 h-24 bg-white/5 border-2 border-dashed border-white/10 rounded-2xl flex items-center justify-center overflow-hidden">
+                <i data-lucide="image" class="w-8 h-8 text-slate-500"></i>
+              </div>
+              <input type="file" id="new-team-logo-input" accept="image/*" onchange="handleLogoUpload(event)" class="hidden">
+              <button type="button" onclick="document.getElementById('new-team-logo-input').click()" class="absolute -bottom-2 -right-2 w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                <i data-lucide="camera" class="w-4 h-4 text-white"></i>
+              </button>
+            </div>
+          </div>
+
           <div>
             <label class="text-[10px] font-bold text-slate-500 uppercase ml-1 mb-1 block">Nome da Equipa</label>
             <input type="text" id="new-team-name" required placeholder="Ex: Sambizanga Futsal" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
@@ -338,11 +525,15 @@
           <div>
             <label class="text-[10px] font-bold text-slate-500 uppercase ml-1 mb-1 block">Município</label>
             <select id="new-team-city" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
-              <option value="Luanda">Luanda</option>
-              <option value="Viana">Viana</option>
-              <option value="Cazenga">Cazenga</option>
               <option value="Belas">Belas</option>
+              <option value="Cacuaco">Cacuaco</option>
+              <option value="Cazenga">Cazenga</option>
+              <option value="Icolo e Bengo">Icolo e Bengo</option>
+              <option value="Luanda">Luanda</option>
+              <option value="Quiçama">Quiçama</option>
+              <option value="Kilamba Kiaxi">Kilamba Kiaxi</option>
               <option value="Talatona">Talatona</option>
+              <option value="Viana">Viana</option>
             </select>
           </div>
           <div class="grid grid-cols-2 gap-4">
@@ -417,9 +608,94 @@
     <script>
       // --- Data ---
       let isAdmin = false; // Simulated admin status
+      let tempTeamLogo = null;
+
+      function handleLogoUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            tempTeamLogo = e.target.result;
+            document.getElementById('logo-preview').innerHTML = `<img src="${tempTeamLogo}" class="w-full h-full object-cover rounded-xl">`;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+      function openCompetitionSignupModal() {
+        const teamSelect = document.getElementById('signup-team-id');
+        teamSelect.innerHTML = teams.map(t => `<option value="${t.id}">${t.name || t.team}</option>`).join('');
+        
+        document.getElementById('comp-signup-modal').classList.remove('hidden');
+        document.getElementById('comp-signup-modal').classList.add('flex');
+      }
+
+      function closeCompSignupModal() {
+        document.getElementById('comp-signup-modal').classList.add('hidden');
+        document.getElementById('comp-signup-modal').classList.remove('flex');
+      }
+
+      function confirmCompSignup() {
+        if (!isAdmin) {
+          openCheckout('Inscrição em Torneio', 25000);
+          closeCompSignupModal();
+        } else {
+          alert('Equipa inscrita com sucesso pelo Administrador! 🇦🇴');
+          closeCompSignupModal();
+          renderCompetitions();
+        }
+      }
+
+      function handleAddCompetition() {
+        document.getElementById('add-comp-modal').classList.remove('hidden');
+        document.getElementById('add-comp-modal').classList.add('flex');
+      }
+
+      function closeAddCompModal() {
+        document.getElementById('add-comp-modal').classList.add('hidden');
+        document.getElementById('add-comp-modal').classList.remove('flex');
+      }
+
+      function saveNewCompetition() {
+        const name = document.getElementById('new-comp-name').value;
+        if (!name) return alert('Insere o nome da competição');
+        
+        alert('Competição "' + name + '" criada com sucesso! 🏆');
+        closeAddCompModal();
+        renderCompetitions();
+      }
+
+      function renderCompetitions() {
+        const list = document.getElementById('competition-list');
+        const comps = [
+          { name: 'Campeonato Provincial', scope: 'Luanda', status: 'ABERTO', icon: 'P' },
+          { name: 'Campeonato Nacional', scope: 'Angola', status: 'BREVEMENTE', icon: 'N' },
+          { name: 'Taça de Angola', scope: 'Nacional', status: 'FECHADO', icon: 'T' }
+        ];
+
+        list.innerHTML = comps.map(c => `
+          <div class="glass p-5 rounded-2xl flex items-center justify-between ${c.status === 'FECHADO' ? 'opacity-50' : ''}">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-blue-500/20 text-blue-500 rounded-xl flex items-center justify-center font-black">${c.icon}</div>
+              <div>
+                <h4 class="font-bold text-sm">${c.name}</h4>
+                <p class="text-[10px] text-slate-500">${c.scope} • 2025</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-bold ${c.status === 'ABERTO' ? 'text-green-500 bg-green-500/10' : 'text-slate-500 bg-white/5'} px-2 py-1 rounded">${c.status}</span>
+          </div>
+        `).join('');
+      }
+
       function toggleAdmin() {
         isAdmin = !isAdmin;
         alert('Modo Admin: ' + (isAdmin ? 'ATIVADO' : 'DESATIVADO'));
+        
+        // Update UI for admin-only elements
+        document.querySelectorAll('.admin-only').forEach(el => {
+          if (isAdmin) el.classList.remove('hidden');
+          else el.classList.add('hidden');
+        });
+        renderTeams();
       }
       const municipalities = ['Belas', 'Cacuaco', 'Cazenga', 'Icolo e Bengo', 'Luanda', 'Quiçama', 'Kilamba Kiaxi', 'Talatona', 'Viana'];
       let selectedMunicipalities = [...municipalities];
@@ -471,6 +747,7 @@
         renderMatches('PROVINCIAL');
         renderFields();
         renderTeams();
+        renderCompetitions();
       }
 
       function switchTab(tabId) {
@@ -495,7 +772,29 @@
             activeNav.classList.remove('text-slate-500');
           }
         }
+
+        // Reset sub-tabs if switching to competitions
+        if (tabId === 'equipas') {
+          switchSubTab('sub-equipas');
+        }
+
         window.scrollTo(0, 0);
+      }
+
+      function switchSubTab(subTabId) {
+        document.querySelectorAll('.sub-tab-content').forEach(tab => tab.classList.add('hidden'));
+        document.getElementById(subTabId).classList.remove('hidden');
+
+        document.querySelectorAll('.sub-nav-btn').forEach(btn => {
+          btn.classList.remove('bg-blue-600', 'text-white');
+          btn.classList.add('text-slate-400');
+        });
+
+        const activeBtn = document.getElementById('sub-nav-' + subTabId.replace('sub-', ''));
+        if (activeBtn) {
+          activeBtn.classList.add('bg-blue-600', 'text-white');
+          activeBtn.classList.remove('text-slate-400');
+        }
       }
 
       function renderFeed() {
@@ -679,6 +978,60 @@
         renderTeams();
       }
 
+      function openSquadModal(teamId) {
+        const team = teams.find(t => t.id === teamId);
+        if (team) {
+          document.getElementById('squad-team-name').innerText = 'Plantel: ' + (team.name || team.team);
+          document.getElementById('squad-modal').classList.remove('hidden');
+          document.getElementById('squad-modal').classList.add('flex');
+        }
+      }
+
+      function closeSquadModal() {
+        document.getElementById('squad-modal').classList.add('hidden');
+        document.getElementById('squad-modal').classList.remove('flex');
+      }
+
+      function openAddAthleteModal() {
+        document.getElementById('add-athlete-modal').classList.remove('hidden');
+        document.getElementById('add-athlete-modal').classList.add('flex');
+      }
+
+      function closeAddAthleteModal() {
+        document.getElementById('add-athlete-modal').classList.add('hidden');
+        document.getElementById('add-athlete-modal').classList.remove('flex');
+      }
+
+      function saveAthlete() {
+        const name = document.getElementById('athlete-name').value;
+        const pos = document.getElementById('athlete-pos').value;
+        const num = document.getElementById('athlete-number').value;
+
+        if (!name) return alert('Insere o nome do atleta');
+
+        const squadList = document.getElementById('squad-list');
+        const athleteHtml = `
+          <div class="glass p-3 rounded-xl flex items-center justify-between animate-in slide-in-from-right duration-300">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center font-bold">${name.substring(0,2).toUpperCase()}</div>
+              <div>
+                <p class="text-sm font-bold">${name}</p>
+                <p class="text-[10px] text-slate-500">${pos} • #${num}</p>
+              </div>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-red-500/50 hover:text-red-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </div>
+        `;
+        
+        squadList.insertAdjacentHTML('beforeend', athleteHtml);
+        lucide.createIcons();
+        closeAddAthleteModal();
+        
+        // Clear inputs
+        document.getElementById('athlete-name').value = '';
+        document.getElementById('athlete-number').value = '';
+      }
+
       function handleAddTeam() {
         if (isAdmin) {
           openAddTeamModal();
@@ -697,24 +1050,80 @@
         document.getElementById('add-team-modal').classList.remove('flex');
       }
 
+      function deleteTeam(id) {
+        if (confirm('Tem a certeza que deseja apagar esta equipa?')) {
+          const index = teams.findIndex(t => t.id === id);
+          if (index !== -1) {
+            teams.splice(index, 1);
+            renderTeams();
+          }
+        }
+      }
+
+      let editingTeamId = null;
+      function editTeam(id) {
+        const team = teams.find(t => t.id === id);
+        if (!team) return;
+
+        editingTeamId = id;
+        document.getElementById('new-team-name').value = team.name || team.team;
+        document.getElementById('new-team-city').value = team.city;
+        document.getElementById('new-team-gender').value = team.gender;
+        document.getElementById('new-team-season').value = team.season;
+        
+        if (team.logo && team.logo.startsWith('data:image')) {
+          tempTeamLogo = team.logo;
+          document.getElementById('logo-preview').innerHTML = `<img src="${tempTeamLogo}" class="w-full h-full object-cover rounded-xl">`;
+        } else {
+          tempTeamLogo = null;
+          document.getElementById('logo-preview').innerHTML = `<i data-lucide="image" class="w-8 h-8 text-slate-500"></i>`;
+          lucide.createIcons();
+        }
+
+        document.getElementById('add-team-modal-title').innerText = 'Editar Equipa';
+        openAddTeamModal();
+      }
+
       function saveNewTeam() {
         const name = document.getElementById('new-team-name').value;
         const city = document.getElementById('new-team-city').value;
         const gender = document.getElementById('new-team-gender').value;
         const season = document.getElementById('new-team-season').value;
 
-        const newTeam = {
-          id: Date.now().toString(),
-          name: name,
-          city: city,
-          category: currentTeamCategory === 'CLASSIFICACAO' ? 'PROVINCIAL' : currentTeamCategory,
-          gender: gender,
-          season: season,
-          logo: name[0].toUpperCase()
-        };
+        if (editingTeamId) {
+          const index = teams.findIndex(t => t.id === editingTeamId);
+          if (index !== -1) {
+            teams[index] = {
+              ...teams[index],
+              name: name,
+              city: city,
+              gender: gender,
+              season: season,
+              logo: tempTeamLogo || name[0].toUpperCase()
+            };
+            alert('Equipa atualizada com sucesso! 🇦🇴');
+          }
+          editingTeamId = null;
+        } else {
+          const newTeam = {
+            id: Date.now().toString(),
+            name: name,
+            city: city,
+            category: 'PROVINCIAL',
+            gender: gender,
+            season: season,
+            logo: tempTeamLogo || name[0].toUpperCase()
+          };
+          teams.push(newTeam);
+          alert('Equipa registada com sucesso! 🇦🇴⚽');
+        }
+        
+        // Reset logo preview
+        tempTeamLogo = null;
+        document.getElementById('logo-preview').innerHTML = `<i data-lucide="image" class="w-8 h-8 text-slate-500"></i>`;
+        document.getElementById('add-team-modal-title').innerText = 'Registar Nova Equipa';
+        lucide.createIcons();
 
-        teams.push(newTeam);
-        alert('Equipa registada com sucesso! 🇦🇴⚽');
         closeAddTeamModal();
         renderTeams();
       }
@@ -752,7 +1161,9 @@
           list.innerHTML = filtered.map(t => `
             <div class="glass p-4 flex items-center justify-between rounded-2xl border-l-4 border-blue-500">
               <div class="flex items-center gap-4">
-                <div class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center font-black text-2xl shadow-inner">${t.logo || t.name[0]}</div>
+                <div class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center font-black text-2xl shadow-inner overflow-hidden">
+                  ${t.logo && t.logo.startsWith('data:image') ? `<img src="${t.logo}" class="w-full h-full object-cover">` : (t.logo || t.name[0])}
+                </div>
                 <div>
                   <h3 class="font-bold text-sm">${t.name || t.team}</h3>
                   <div class="flex gap-2 mt-1">
@@ -761,9 +1172,20 @@
                   </div>
                 </div>
               </div>
-              <button class="w-10 h-10 glass rounded-xl flex items-center justify-center text-slate-500 hover:text-blue-400 transition-colors">
-                <i data-lucide="chevron-right" class="w-5 h-5"></i>
-              </button>
+              <div class="flex items-center gap-2">
+                <button onclick="openSquadModal('${t.id}')" class="flex items-center gap-2 px-3 py-2 bg-blue-500/10 text-blue-400 rounded-xl hover:bg-blue-500 hover:text-white transition-all group">
+                  <span class="text-[10px] font-bold uppercase hidden group-hover:block">Plantel</span>
+                  <i data-lucide="users" class="w-4 h-4"></i>
+                </button>
+                <div class="flex gap-1 admin-only ${isAdmin ? '' : 'hidden'}">
+                  <button onclick="editTeam('${t.id}')" class="p-2 bg-white/5 text-slate-400 hover:text-blue-400 rounded-lg transition-colors">
+                    <i data-lucide="edit-2" class="w-4 h-4"></i>
+                  </button>
+                  <button onclick="deleteTeam('${t.id}')" class="p-2 bg-white/5 text-slate-400 hover:text-red-500 rounded-lg transition-colors">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
             </div>
           `).join('');
         }
